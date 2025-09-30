@@ -57,11 +57,6 @@ const BiasIndicator = ({
           <div className="text-sm font-semibold text-gray-900">
             {Math.round(biasScore)}
           </div>
-          {confidence && (
-            <div className="text-xs text-gray-500">
-              {Math.round(confidence * 100)}%
-            </div>
-          )}
         </div>
       </div>
 
@@ -71,11 +66,11 @@ const BiasIndicator = ({
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${biasCategory.bgColor} ${biasCategory.textColor} ${biasCategory.borderColor}`}>
             {biasCategory.shortLabel}
           </span>
-          {/* {showDetails && confidence && (
+          {showDetails && confidence && (
             <span className="text-xs text-gray-500 mt-1">
               Confidence: {Math.round(confidence * 100)}%
             </span>
-          )} */}
+          )}
         </div>
       )}
     </div>

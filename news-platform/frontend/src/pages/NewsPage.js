@@ -13,6 +13,7 @@ const NewsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [biasFilter, setBiasFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedArticles, setExpandedArticles] = useState(new Set());
   const articlesPerPage = 9;
 
   useEffect(() => {
@@ -84,6 +85,16 @@ const NewsPage = () => {
 
   const handleRefresh = () => {
     loadNews(searchQuery || 'latest news');
+  };
+
+  const toggleExpandArticle = (index) => {
+    const newExpanded = new Set(expandedArticles);
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index);
+    } else {
+      newExpanded.add(index);
+    }
+    setExpandedArticles(newExpanded);
   };
 
   return (
@@ -255,9 +266,23 @@ const NewsPage = () => {
                 )}
 
                 {/* Content */}
-                <p className="text-sm text-gray-700 mb-4 flex-1 line-clamp-3">
-                  {truncateText(article.summary?.summary || article.content || article.description, 150)}
-                </p>
+                <div className="text-sm text-gray-700 mb-4 flex-1">
+                  <p className={expandedArticles.has(index) ? '' : 'line-clamp-3'}>
+                    {expandedArticles.has(index) 
+                      ? (article.summary?.summary || article.content || article.description)
+                      : truncateText(article.summary?.summary || article.content || article.description, 150)
+                    }
+                  </p>
+                  {(article.summary?.summary || article.content || article.description) && 
+                   (article.summary?.summary || article.content || article.description).length > 150 && (
+                    <button
+                      onClick={() => toggleExpandArticle(index)}
+                      className="text-blue-600 hover:text-blue-700 text-xs font-medium mt-1 focus:outline-none"
+                    >
+                      {expandedArticles.has(index) ? 'Show less' : 'Show more'}
+                    </button>
+                  )}
+                </div>
 
                 {/* Bias Analysis - Compact */}
                 <div className="bg-gray-50 rounded-lg p-3 mb-4">
@@ -267,7 +292,7 @@ const NewsPage = () => {
                     </span>
                     {article.bias?.confidence && (
                       <span className="text-xs text-gray-500">
-                        {Math.round(article.bias.confidence * 100)}%
+                      Confidence:   {Math.round(article.bias.confidence * 100)}%
                       </span>
                     )}
                   </div>
