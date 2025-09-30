@@ -5,7 +5,7 @@ const router = express.Router();
 
 /**
  * GET /api/news/search
- * Search for news articles with bias analysis
+ * CTN News Intelligence System - Search articles with comprehensive bias analysis
  */
 router.get('/search', async (req, res) => {
   try {
@@ -19,10 +19,10 @@ router.get('/search', async (req, res) => {
       return res.status(400).json({ error: 'Limit cannot exceed 20 articles' });
     }
 
-    console.log(`🔍 Searching news: "${query}"`);
+    console.log(`🔍 CTN News Intelligence System query: "${query}"`);
 
-    // Search for news articles
-    const newsData = await aiService.searchNews(query, '', parseInt(limit));
+    // Search for news articles using CTN news retrieval system
+    const newsData = await aiService.ctnSearchNewsArticles(query, '', parseInt(limit));
     
     if (!newsData.articles || newsData.articles.length === 0) {
       return res.json({ 
@@ -33,9 +33,9 @@ router.get('/search', async (req, res) => {
       });
     }
 
-    // Process articles with AI bias analysis
+    // Process articles with CTN AI analysis pipeline
     const processedArticles = await Promise.all(
-      newsData.articles.map(article => aiService.processArticle(article))
+      newsData.articles.map(article => aiService.ctnProcessCompleteArticle(article))
     );
 
     res.json({

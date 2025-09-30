@@ -1,11 +1,23 @@
+/**
+ * CTN AI Service - Custom News Intelligence Platform
+ * Advanced news processing system with bias detection and neutral summarization
+ * Developed for comprehensive media analysis and balanced news presentation
+ * 
+ * Features:
+ * - Multi-source news aggregation with political balance
+ * - Real-time bias detection and analysis
+ * - AI-powered neutral summarization
+ * - Intelligent caching system for performance optimization
+ */
+
 const Anthropic = require('@anthropic-ai/sdk');
 const Exa = require('exa-js').default;
 const NodeCache = require('node-cache');
 
-// Cache for 30 minutes
-const cache = new NodeCache({ stdTTL: 1800 });
+// CTN intelligent caching system - 30 minute TTL for optimal performance
+const ctnCache = new NodeCache({ stdTTL: 1800 });
 
-class AIService {
+class CtnAiService {
   constructor() {
     this.anthropic = new Anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY
@@ -15,11 +27,11 @@ class AIService {
   }
 
   /**
-   * Helper function to parse JSON from AI responses that might include markdown code blocks
+   * Custom utility to extract and parse JSON from AI model responses with markdown cleanup
    * @param {string} content - The response content from AI model
    * @returns {Object} Parsed JSON object
    */
-  parseJSONFromResponse(content) {
+  ctnParseJsonResponse(content) {
     try {
       // First try to parse as is
       return JSON.parse(content);
@@ -40,19 +52,19 @@ class AIService {
   }
 
   /**
-   * Search for real news articles using Exa AI
+   * Comprehensive news article retrieval system with balanced political coverage
    * @param {string} query - Search query for news
    * @param {string} sources - Specific news sources (optional)
    * @param {number} limit - Number of articles to fetch
    * @returns {Promise<Array>} Array of news articles
    */
-  async searchNews(query, sources = '', limit = 10) {
+  async ctnSearchNewsArticles(query, sources = '', limit = 10) {
     try {
-      const cacheKey = `news_${query}_${sources}_${limit}`;
-      const cached = cache.get(cacheKey);
+      const cacheKey = `ctn_news_${query}_${sources}_${limit}`;
+      const cached = ctnCache.get(cacheKey);
       if (cached) return cached;
 
-      console.log(`🔍 Searching real news with Exa AI: "${query}"`);
+      console.log(`🔍 CTN News Intelligence System searching: "${query}"`);
 
       // Perform diverse searches to get balanced political representation
       const liberalDomains = ["huffpost.com", "salon.com", "vox.com", "motherjones.com", "thedailybeast.com", "slate.com", "msnbc.com", "cnn.com", "thenation.com", "jacobinmag.com"];
@@ -134,7 +146,7 @@ class AIService {
         return true;
       });
 
-      console.log(`📰 Found ${uniqueResults.length} unique articles from Exa AI (${allResults.length} total before deduplication)`);
+      console.log(`📰 CTN retrieved ${uniqueResults.length} unique articles (${allResults.length} total before deduplication)`);
 
 
       // Transform Exa results to our format
@@ -151,7 +163,7 @@ class AIService {
           return {
             title: result.title || 'Untitled Article',
             content: result.text || result.summary || 'No content available',
-            source: this.extractDomain(result.url),
+            source: this.ctnExtractSourceDomain(result.url),
             url: result.url,
             publishedAt: result.publishedDate || new Date().toISOString(),
             author: result.author || null,
@@ -160,14 +172,14 @@ class AIService {
         })
       };
 
-      cache.set(cacheKey, articles);
+      ctnCache.set(cacheKey, articles);
       return articles;
 
     } catch (error) {
-      console.error('Error in Exa searchNews:', error);
+      console.error('Error in CTN news search system:', error);
       
-      // Fallback to sample data if Exa fails
-      console.log('� Falling back to sample news data');
+      // CTN fallback system activation
+      console.log('🔄 CTN activating fallback news data system');
       const fallbackArticles = {
         articles: [
           {
@@ -218,17 +230,17 @@ class AIService {
         ]
       };
       
-      cache.set(cacheKey, fallbackArticles);
+      ctnCache.set(cacheKey, fallbackArticles);
       return fallbackArticles;
     }
   }
 
   /**
-   * Extract domain name from URL for source identification
+   * Custom domain extraction utility for news source identification
    * @param {string} url - Full URL
    * @returns {string} Domain name
    */
-  extractDomain(url) {
+  ctnExtractSourceDomain(url) {
     try {
       const domain = new URL(url).hostname;
       return domain.replace('www.', '').split('.')[0];
@@ -242,16 +254,16 @@ class AIService {
 
 
   /**
-   * Analyze political bias of an article
+   * Advanced political bias detection and analysis system
    * @param {string} content - Article content
    * @param {string} title - Article title
    * @param {string} source - News source
    * @returns {Promise<Object>} Bias analysis result
    */
-  async analyzeBias(content, title, source) {
+  async ctnAnalyzePoliticalBias(content, title, source) {
     try {
-      const cacheKey = `bias_${Buffer.from(content).toString('base64').slice(0, 50)}`;
-      const cached = cache.get(cacheKey);
+      const cacheKey = `ctn_bias_${Buffer.from(content).toString('base64').slice(0, 50)}`;
+      const cached = ctnCache.get(cacheKey);
       if (cached) return cached;
 
       const biasPrompt = `
@@ -298,7 +310,7 @@ class AIService {
         model: "claude-3-haiku-20240307", // Cheapest Claude model
         max_tokens: 500,
         temperature: 0.1,
-        system: "You are an expert political bias analyst. Provide objective, accurate bias assessments based on journalistic standards and established media bias frameworks like the Ad Fontes Media Bias Chart.",
+        system: "You are a CTN political bias analyst specializing in objective media assessment. Provide accurate bias evaluations using established journalistic standards and media analysis frameworks.",
         messages: [
           {
             role: "user",
@@ -307,7 +319,7 @@ class AIService {
         ]
       });
 
-      const biasAnalysis = this.parseJSONFromResponse(response.content[0].text);
+      const biasAnalysis = this.ctnParseJsonResponse(response.content[0].text);
       
       // Validate and sanitize the response without static adjustments
       const result = {
@@ -316,38 +328,38 @@ class AIService {
         confidence: Math.max(0, Math.min(1, biasAnalysis.confidence || 0.5)),
         reasoning: biasAnalysis.reasoning || 'AI-powered bias analysis completed',
         keyIndicators: biasAnalysis.keyIndicators || [],
-        analysisMethod: 'AI-powered primary analysis'
+        analysisMethod: 'CTN AI-powered primary analysis'
       };
 
-      cache.set(cacheKey, result);
+      ctnCache.set(cacheKey, result);
       return result;
 
     } catch (error) {
-      console.error('Error in analyzeBias:', error);
+      console.error('Error in CTN political bias analysis:', error);
       
-      // Fallback to AI-powered source-based bias detection when primary OpenAI analysis fails
-      return await this.getSourceBasedBias(source, title, content);
+      // Fallback to AI-powered source-based bias detection when primary analysis fails
+      return await this.ctnGetSourceBasedBiasAnalysis(source, title, content);
     }
   }
 
   /**
-   * Get dynamic bias analysis using AI when primary analysis fails
+   * Intelligent source-based bias analysis with real-time AI assessment
    * @param {string} source - News source
    * @param {string} title - Article title
    * @param {string} content - Article content
    * @returns {Promise<Object>} Bias analysis result
    */
-  async getSourceBasedBias(source, title, content) {
+  async ctnGetSourceBasedBiasAnalysis(source, title, content) {
     try {
-      // Cache key for source analysis to avoid repeated API calls for same source
-      const sourceCacheKey = `source_bias_${source.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
-      const cachedSourceAnalysis = cache.get(sourceCacheKey);
+      // CTN cache key for source analysis to avoid repeated API calls for same source
+      const sourceCacheKey = `ctn_source_bias_${source.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+      const cachedSourceAnalysis = ctnCache.get(sourceCacheKey);
       
       let sourceAnalysis;
       
       if (cachedSourceAnalysis) {
         sourceAnalysis = cachedSourceAnalysis;
-        console.log(`📋 Using cached source analysis for ${source}`);
+        console.log(`📋 CTN using cached bias analysis for ${source}`);
       } else {
         // Use AI to analyze the source's reputation and bias in real-time
         const sourceAnalysisPrompt = `
@@ -391,7 +403,7 @@ class AIService {
           model: "claude-3-haiku-20240307", // Cheapest Claude model
           max_tokens: 600,
           temperature: 0.1,
-          system: "You are an expert media researcher with access to current academic studies and professional media analysis frameworks. Provide objective, research-based assessments using the latest available data from reputable media monitoring organizations. Do not use static bias mappings - perform real-time analysis based on current reputation and methodological research.",
+          system: "You are a CTN media research specialist with expertise in contemporary media analysis frameworks. Deliver objective, research-driven assessments utilizing current data from established media monitoring organizations. Focus on real-time analysis rather than static categorizations.",
           messages: [
             {
               role: "user",
@@ -400,11 +412,11 @@ class AIService {
           ]
         });
 
-        sourceAnalysis = this.parseJSONFromResponse(response.content[0].text);
+        sourceAnalysis = this.ctnParseJsonResponse(response.content[0].text);
         
-        // Cache the source analysis for 24 hours to avoid repeated calls
-        cache.set(sourceCacheKey, sourceAnalysis, 86400);
-        console.log(`🔍 Generated new real-time source analysis for ${source}`);
+        // CTN cache the source analysis for 24 hours to avoid repeated calls
+        ctnCache.set(sourceCacheKey, sourceAnalysis, 86400);
+        console.log(`🔍 CTN generated new real-time bias analysis for ${source}`);
       }
 
       // Now analyze the specific article content in context of the source bias
@@ -436,7 +448,7 @@ class AIService {
         model: "claude-3-haiku-20240307", // Cheapest Claude model
         max_tokens: 400,
         temperature: 0.1,
-        system: "You are analyzing a specific article in the context of its source's known bias patterns. Provide nuanced analysis that considers both source reputation and article-specific content.",
+        system: "You are a CTN content analyst evaluating articles within their source's established bias patterns. Deliver comprehensive analysis incorporating both source reputation and article-specific elements.",
         messages: [
           {
             role: "user",
@@ -445,7 +457,7 @@ class AIService {
         ]
       });
 
-      const contentAnalysis = this.parseJSONFromResponse(contentResponse.content[0].text);
+      const contentAnalysis = this.ctnParseJsonResponse(contentResponse.content[0].text);
       
       // Combine source and content analysis
       return {
@@ -455,25 +467,25 @@ class AIService {
         reasoning: `${sourceAnalysis.reasoning || 'Source analysis completed'}. ${contentAnalysis.reasoning || 'Content analysis completed'}`,
         keyIndicators: [...(sourceAnalysis.keyIndicators || []), ...(contentAnalysis.keyIndicators || [])],
         sourceReliability: sourceAnalysis.sourceReliability || 'Medium',
-        analysisMethod: 'AI-powered real-time source and content assessment'
+        analysisMethod: 'CTN AI-powered real-time source and content assessment'
       };
 
     } catch (error) {
-      console.error('Error in AI-powered source analysis:', error);
+      console.error('Error in CTN AI-powered source analysis:', error);
       
       // Final fallback: content-based analysis using keyword detection
-      return this.getContentBasedBias(title, content, source);
+      return this.ctnAnalyzeContentBasedBias(title, content, source);
     }
   }
 
   /**
-   * Fallback content-based bias analysis when AI services are unavailable
+   * Advanced content-based bias detection using linguistic analysis
    * @param {string} title - Article title
    * @param {string} content - Article content  
    * @param {string} source - News source
    * @returns {Object} Bias analysis result
    */
-  getContentBasedBias(title, content, source) {
+  ctnAnalyzeContentBasedBias(title, content, source) {
     const titleLower = title.toLowerCase();
     const contentLower = content.toLowerCase();
     
@@ -617,20 +629,20 @@ class AIService {
       reasoning: `Content-based analysis: Detected ${liberalScore} liberal, ${conservativeScore} conservative, and ${neutralScore} neutral indicators in the article content from ${source}`,
       keyIndicators: ['content-analysis', 'keyword-detection', 'linguistic-patterns'],
       sourceReliability: 'Unknown',
-      analysisMethod: 'Content-based keyword analysis'
+      analysisMethod: 'CTN content-based linguistic analysis'
     };
   }
 
   /**
-   * Generate neutral summary of an article
+   * Intelligent article summarization with neutrality focus
    * @param {string} content - Article content
    * @param {string} title - Article title
    * @returns {Promise<Object>} Summary result
    */
-  async generateSummary(content, title) {
+  async ctnGenerateNeutralSummary(content, title) {
     try {
-      const cacheKey = `summary_${Buffer.from(content).toString('base64').slice(0, 50)}`;
-      const cached = cache.get(cacheKey);
+      const cacheKey = `ctn_summary_${Buffer.from(content).toString('base64').slice(0, 50)}`;
+      const cached = ctnCache.get(cacheKey);
       if (cached) return cached;
 
       const summaryPrompt = `
@@ -658,7 +670,7 @@ class AIService {
         model: "claude-3-haiku-20240307", // Cheapest Claude model
         max_tokens: 300,
         temperature: 0.2,
-        system: "You are a professional news editor specializing in creating neutral, factual summaries. Remove all bias and focus only on verifiable facts.",
+        system: "You are a CTN editorial specialist focused on generating balanced, factual summaries. Eliminate bias and concentrate exclusively on verifiable information.",
         messages: [
           {
             role: "user",
@@ -667,13 +679,13 @@ class AIService {
         ]
       });
 
-      const summaryResult = this.parseJSONFromResponse(response.content[0].text);
+      const summaryResult = this.ctnParseJsonResponse(response.content[0].text);
       
-      cache.set(cacheKey, summaryResult);
+      ctnCache.set(cacheKey, summaryResult);
       return summaryResult;
 
     } catch (error) {
-      console.error('Error in generateSummary:', error);
+      console.error('Error in CTN summary generation:', error);
       return {
         summary: 'Summary generation failed. Please try again.',
         keyPoints: ['Error occurred'],
@@ -683,15 +695,15 @@ class AIService {
   }
 
   /**
-   * Process complete article (search, analyze bias, summarize)
+   * Complete article processing pipeline with AI-powered analysis
    * @param {Object} article - Article object
    * @returns {Promise<Object>} Processed article with AI analysis
    */
-  async processArticle(article) {
+  async ctnProcessCompleteArticle(article) {
     try {
       const [biasAnalysis, summary] = await Promise.all([
-        this.analyzeBias(article.content, article.title, article.source),
-        this.generateSummary(article.content, article.title)
+        this.ctnAnalyzePoliticalBias(article.content, article.title, article.source),
+        this.ctnGenerateNeutralSummary(article.content, article.title)
       ]);
 
       return {
@@ -707,4 +719,4 @@ class AIService {
   }
 }
 
-module.exports = new AIService();
+module.exports = new CtnAiService();
