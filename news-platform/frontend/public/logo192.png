@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
+  <!-- Background circle -->
+  <circle cx="96" cy="96" r="96" fill="#2563eb"/>
+  
+  <!-- News document -->
+  <rect x="48" y="36" width="96" height="120" rx="12" fill="white"/>
+  
+  <!-- Header line -->
+  <rect x="60" y="48" width="72" height="12" rx="6" fill="#2563eb"/>
+  
+  <!-- Content lines with bias indicators -->
+  <rect x="60" y="72" width="48" height="9" rx="4.5" fill="#ef4444"/>
+  <rect x="60" y="90" width="60" height="9" rx="4.5" fill="#22c55e"/>
+  <rect x="60" y="108" width="36" height="9" rx="4.5" fill="#f59e0b"/>
+  <rect x="60" y="126" width="54" height="9" rx="4.5" fill="#8b5cf6"/>
+  <rect x="60" y="144" width="42" height="9" rx="4.5" fill="#06b6d4"/>
+  
+  <!-- AI indicator (small circle with dot) -->
+  <circle cx="120" cy="60" r="15" fill="#10b981"/>
+  <circle cx="120" cy="60" r="6" fill="white"/>
+</svg>

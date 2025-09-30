@@ -1,0 +1,16 @@
+{
+  "short_name": "AI News Analyzer",
+  "name": "AI News Bias Analyzer",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "background_color": "#f9fafb",
+  "description": "Real-time news with AI-powered bias detection and ranking"
+}
