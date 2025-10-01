@@ -66,54 +66,54 @@ class CtnAiService {
 
       console.log(`🔍 CTN News Intelligence System searching: "${query}"`);
 
-      // Perform diverse searches to get balanced political representation
-      const liberalDomains = ["huffpost.com", "salon.com", "vox.com", "motherjones.com", "thedailybeast.com", "slate.com", "msnbc.com", "cnn.com", "thenation.com", "jacobinmag.com"];
-      const centerDomains = ["npr.org", "reuters.com", "bbc.com", "apnews.com", "abcnews.go.com", "cbsnews.com", "nbcnews.com", "pbs.org"];
-      const conservativeDomains = ["foxnews.com", "wsj.com", "nypost.com", "dailywire.com", "nationalreview.com", "theblaze.com", "breitbart.com", "townhall.com"];
-      const allDomains = [...liberalDomains, ...centerDomains, ...conservativeDomains, "theguardian.com", "washingtonpost.com", "nytimes.com", "politico.com", "theatlantic.com", "usatoday.com", "bloomberg.com"];
+      // Perform diverse searches to get comprehensive news coverage
+      const categoryA = ["huffpost.com", "salon.com", "vox.com", "motherjones.com", "thedailybeast.com", "slate.com", "msnbc.com", "cnn.com", "thenation.com", "jacobinmag.com"];
+      const categoryB = ["npr.org", "reuters.com", "bbc.com", "apnews.com", "abcnews.go.com", "cbsnews.com", "nbcnews.com", "pbs.org"];
+      const categoryC = ["foxnews.com", "wsj.com", "nypost.com", "dailywire.com", "nationalreview.com", "theblaze.com", "breitbart.com", "townhall.com"];
+      const allSourceDomains = [...categoryA, ...categoryB, ...categoryC, "theguardian.com", "washingtonpost.com", "nytimes.com", "politico.com", "theatlantic.com", "usatoday.com", "bloomberg.com"];
 
       const searchPromises = [];
       const resultsPerCategory = Math.ceil(limit / 4); // Divide by 4 for better distribution
       
-      // Search 1: Liberal sources with progressive framing
+      // Search 1: First source category
       searchPromises.push(this.exa.searchAndContents(query, {
         type: "neural",
         useAutoprompt: true,
         numResults: Math.min(resultsPerCategory, 8),
-        includeDomains: liberalDomains,
+        includeDomains: categoryA,
         startPublishedDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
         text: { maxCharacters: 800, includeHtmlTags: false },
         includeImageUrls: true
       }));
 
-      // Search 2: Conservative sources with traditional framing  
+      // Search 2: Second source category
       searchPromises.push(this.exa.searchAndContents(query, {
         type: "neural",
         useAutoprompt: true,
         numResults: Math.min(resultsPerCategory, 8),
-        includeDomains: conservativeDomains,
+        includeDomains: categoryC,
         startPublishedDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
         text: { maxCharacters: 800, includeHtmlTags: false },
         includeImageUrls: true
       }));
 
-      // Search 3: Neutral/centrist sources
+      // Search 3: Third source category
       searchPromises.push(this.exa.searchAndContents(query, {
         type: "neural",
         useAutoprompt: true,
         numResults: Math.min(resultsPerCategory, 8),
-        includeDomains: centerDomains,
+        includeDomains: categoryB,
         startPublishedDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
         text: { maxCharacters: 800, includeHtmlTags: false },
         includeImageUrls: true
       }));
 
-      // Search 4: Mixed sources for additional variety
+      // Search 4: Mixed sources for additional coverage
       searchPromises.push(this.exa.searchAndContents(query, {
         type: "neural", 
         useAutoprompt: true,
         numResults: Math.min(limit, 10),
-        includeDomains: sources ? sources.split(',').map(s => s.trim()) : allDomains,
+        includeDomains: sources ? sources.split(',').map(s => s.trim()) : allSourceDomains,
         startPublishedDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
         text: { maxCharacters: 800, includeHtmlTags: false },
         includeImageUrls: true
@@ -551,27 +551,27 @@ class CtnAiService {
     // Enhanced source-based bias detection with forced distribution
     const sourceLower = source.toLowerCase();
     
-    // Strong source bias indicators
-    const liberalSources = [
+    // Source categorization for bias analysis
+    const sourceGroupAlpha = [
       'huffington', 'huffpost', 'salon', 'vox', 'dailykos', 'motherjones', 'thenation',
       'commondreams', 'thinkprogress', 'mediamatters', 'rawstory', 'alternet', 'truthout',
       'democracynow', 'jacobin', 'slate', 'washingtonpost', 'nytimes', 'cnn', 'msnbc'
     ];
     
-    const conservativeSources = [
+    const sourceGroupBeta = [
       'foxnews', 'fox', 'dailywire', 'breitbart', 'nationalreview', 'townhall',
       'dailycaller', 'redstate', 'theblaze', 'washingtonexaminer', 'nypost',
       'americanthinker', 'powerline', 'hotair', 'pjmedia', 'oann', 'newsmax'
     ];
     
-    // Apply strong source bias modifiers
+    // Apply source-based bias modifiers
     let sourceModifier = 0;
-    if (liberalSources.some(src => sourceLower.includes(src))) {
-      liberalScore += 10; // Strong liberal source boost
-      sourceModifier = -25; // Push toward liberal scoring
-    } else if (conservativeSources.some(src => sourceLower.includes(src))) {
-      conservativeScore += 10; // Strong conservative source boost  
-      sourceModifier = 25; // Push toward conservative scoring
+    if (sourceGroupAlpha.some(src => sourceLower.includes(src))) {
+      liberalScore += 10; // Source group Alpha boost
+      sourceModifier = -25; // Push toward alpha scoring
+    } else if (sourceGroupBeta.some(src => sourceLower.includes(src))) {
+      conservativeScore += 10; // Source group Beta boost  
+      sourceModifier = 25; // Push toward beta scoring
     }
     
     // Calculate bias score with forced distribution (avoid neutral)
