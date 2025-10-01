@@ -36,7 +36,6 @@ news-platform/
     ├── routes/              # API endpoints
     ├── services/            # Business logic
     │   ├── aiService.js     # OpenAI integration
-    │   └── personalizationService.js # User personalization
     └── config/              # Configuration files
 ```
 
