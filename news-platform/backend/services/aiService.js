@@ -14,7 +14,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 const Exa = require('exa-js').default;
 const NodeCache = require('node-cache');
 
-// CTN intelligent caching system - 30 minute TTL for optimal performance
+//   caching system - 30 minute TTL for optimal performance
 const ctnCache = new NodeCache({ stdTTL: 1800 });
 
 class CtnAiService {
@@ -178,8 +178,8 @@ class CtnAiService {
     } catch (error) {
       console.error('Error in CTN news search system:', error);
       
-      // CTN fallback system activation
-      console.log('🔄 CTN activating fallback news data system');
+      //  fallback system 
+      console.log(' CTN activating fallback news data system');
       const fallbackArticles = {
         articles: [
           {
@@ -307,10 +307,10 @@ class CtnAiService {
       `;
 
       const response = await this.anthropic.messages.create({
-        model: "claude-3-haiku-20240307", // Cheapest Claude model
+        model: "claude-3-haiku-20240307", // Claude model
         max_tokens: 500,
         temperature: 0.1,
-        system: "You are a CTN political bias analyst specializing in objective media assessment. Provide accurate bias evaluations using established journalistic standards and media analysis frameworks.",
+        system: "You are a political bias analyst specializing in objective media assessment. Provide accurate bias evaluations using established journalistic standards and media analysis frameworks.",
         messages: [
           {
             role: "user",

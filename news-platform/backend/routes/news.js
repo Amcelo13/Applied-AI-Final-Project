@@ -19,7 +19,6 @@ router.get('/search', async (req, res) => {
       return res.status(400).json({ error: 'Limit cannot exceed 20 articles' });
     }
 
-    console.log(`🔍 CTN News Intelligence System query: "${query}"`);
 
     // Search for news articles using CTN news retrieval system
     const newsData = await aiService.ctnSearchNewsArticles(query, '', parseInt(limit));
